@@ -69,11 +69,15 @@
     files = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), opts = arguments[_i++];
     fs = require('fs');
     ret = {};
+    if ('object' !== typeof opts) {
+      files.push(opts);
+      opts = null;
+    }
     for (_j = 0, _len = files.length; _j < _len; _j++) {
       file = files[_j];
       exports.parse(fs.readFileSync(file, {
         encoding: 'utf-8'
-      }), ret);
+      }), opts, ret);
     }
     return ret;
   };

@@ -44,6 +44,9 @@ exports.parse = (input, opts, result)->
 exports.load = (files..., opts)->
     fs = require 'fs'
     ret = {}
+    if 'object' isnt typeof opts
+        files.push opts
+        opts = null
     for file in files
-        exports.parse fs.readFileSync(file, encoding: 'utf-8'), ret
+        exports.parse fs.readFileSync(file, encoding: 'utf-8'), opts, ret
     ret
