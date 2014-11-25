@@ -26,11 +26,18 @@ use
 cfg = miff.load('/path/to/file.conf', {section: true});
 ```
 
-for numbers
+for number and bool
 
 ```conf
 number = 1.2
-cfg = miff.load('/path/to/file.conf', {numbers: true});
+feature = on
+boolean = off
+on = true
+off = false
+```
+
+```javascript
+cfg = miff.load('/path/to/file.conf', {number: true, bool: true});
 ```
 
 for quotes
@@ -41,7 +48,7 @@ key = ' value '
 ```
 
 ```javascript
-cfg = miff.load('/path/to/file.conf', {quotes: true});
+cfg = miff.load('/path/to/file.conf', {quote: true});
 ```
 
 parse from string

@@ -1,9 +1,10 @@
 
 exports.parse = (input, opts, result)->
-    quotesSupport = opts?.quotes
+    quotesSupport = opts?.quote
     sectionSupport = opts?.section
     equalSignSupport = opts?.equal
-    parseNumber = opts?.numbers
+    parseNumber = opts?.number
+    parseBool = opts?.bool
     result ?= {}
     section = result
     for line, linenumber in input.split /[\r\n]+/
@@ -34,19 +35,27 @@ exports.parse = (input, opts, result)->
                 value = line.substr idx + 1
                 break
         value = value.trimLeft()
-        unquoted = no
+        key = key.trimRight()
         if quotesSupport
             char = value.charAt 0
             if char is '"' and value.charAt(value.length - 1) is '"'
-                value = value.substr 1, value.length - 2
-                unquoted = yes
+                section[key] = value.substr 1, value.length - 2
+                continue
             else if char is "'" and value.charAt(value.length - 1) is "'"
-                value = value.substr 1, value.length - 2
-                unquoted = yes
-        if parseNumber and not unquoted
+                section[key] = value.substr 1, value.length - 2
+                continue
+        if parseBool
+            if value is 'on' or value is 'true'
+                section[key] = true
+                continue
+            else if value is 'off' or value is 'false'
+                section[key] = false
+                continue
+        if parseNumber
             if not isNaN(parseFloat value) and isFinite value
-                value = parseFloat value
-        section[key.trimRight()] = value
+                section[key] = parseFloat value
+                continue
+        section[key] = value
     result
 
 exports.load = (files..., opts)->

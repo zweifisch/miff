@@ -20,7 +20,7 @@ describe 'parse', ->
             k e y= "v a l "
         """
 
-        parse(source, quotes: yes).should.deep.equal
+        parse(source, quote: yes).should.deep.equal
             key:'value'
             'k e y': 'v a l '
 
@@ -67,7 +67,24 @@ describe 'parse', ->
             str = '1.2'
         """
 
-        parse(source, numbers: yes, quotes: yes).should.deep.equal
+        parse(source, number: yes, quote: yes).should.deep.equal
             float: 1.2
             int: 9
             str: '1.2'
+
+    it 'should parse bool', ->
+
+        source = """
+            ace = on
+            boolean = true
+            crate = false
+            drip = off
+            erra = 'true'
+        """
+
+        parse(source, bool: yes, quote: yes).should.deep.equal
+            ace: yes
+            boolean: yes
+            crate: no
+            drip: no
+            erra: 'true'

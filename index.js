@@ -3,11 +3,12 @@
   var __slice = [].slice;
 
   exports.parse = function(input, opts, result) {
-    var char, equalSignSupport, first, idx, key, line, linenumber, parseNumber, quotesSupport, section, sectionSupport, shift, unquoted, value, _i, _len, _ref;
-    quotesSupport = opts != null ? opts.quotes : void 0;
+    var char, equalSignSupport, first, idx, key, line, linenumber, parseBool, parseNumber, quotesSupport, section, sectionSupport, shift, value, _i, _len, _ref;
+    quotesSupport = opts != null ? opts.quote : void 0;
     sectionSupport = opts != null ? opts.section : void 0;
     equalSignSupport = opts != null ? opts.equal : void 0;
-    parseNumber = opts != null ? opts.numbers : void 0;
+    parseNumber = opts != null ? opts.number : void 0;
+    parseBool = opts != null ? opts.bool : void 0;
     if (result == null) {
       result = {};
     }
@@ -52,23 +53,33 @@
         }
       }
       value = value.trimLeft();
-      unquoted = false;
+      key = key.trimRight();
       if (quotesSupport) {
         char = value.charAt(0);
         if (char === '"' && value.charAt(value.length - 1) === '"') {
-          value = value.substr(1, value.length - 2);
-          unquoted = true;
+          section[key] = value.substr(1, value.length - 2);
+          continue;
         } else if (char === "'" && value.charAt(value.length - 1) === "'") {
-          value = value.substr(1, value.length - 2);
-          unquoted = true;
+          section[key] = value.substr(1, value.length - 2);
+          continue;
         }
       }
-      if (parseNumber && !unquoted) {
+      if (parseBool) {
+        if (value === 'on' || value === 'true') {
+          section[key] = true;
+          continue;
+        } else if (value === 'off' || value === 'false') {
+          section[key] = false;
+          continue;
+        }
+      }
+      if (parseNumber) {
         if (!isNaN(parseFloat(value)) && isFinite(value)) {
-          value = parseFloat(value);
+          section[key] = parseFloat(value);
+          continue;
         }
       }
-      section[key.trimRight()] = value;
+      section[key] = value;
     }
     return result;
   };
