@@ -3,6 +3,7 @@ exports.parse = (input, opts, result)->
     quotesSupport = opts?.quotes
     sectionSupport = opts?.section
     equalSignSupport = opts?.equal
+    parseNumber = opts?.numbers
     result ?= {}
     section = result
     for line, linenumber in input.split /[\r\n]+/
@@ -33,11 +34,18 @@ exports.parse = (input, opts, result)->
                 value = line.substr idx + 1
                 break
         value = value.trimLeft()
+        unquoted = no
         if quotesSupport
-            if value.charAt(0) is '"' and value.charAt(value.length - 1) is '"'
+            char = value.charAt 0
+            if char is '"' and value.charAt(value.length - 1) is '"'
                 value = value.substr 1, value.length - 2
-            if value.charAt(0) is "'" and value.charAt(value.length - 1) is "'"
+                unquoted = yes
+            else if char is "'" and value.charAt(value.length - 1) is "'"
                 value = value.substr 1, value.length - 2
+                unquoted = yes
+        if parseNumber and not unquoted
+            if not isNaN(parseFloat value) and isFinite value
+                value = parseFloat value
         section[key.trimRight()] = value
     result
 

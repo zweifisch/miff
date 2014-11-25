@@ -4,7 +4,6 @@ minimal configuration file parser
 
 ```conf
 key = value
-string = for every thing
 ```
 
 usage
@@ -27,6 +26,13 @@ use
 cfg = miff.load('/path/to/file.conf', {section: true});
 ```
 
+for numbers
+
+```conf
+number = 1.2
+cfg = miff.load('/path/to/file.conf', {numbers: true});
+```
+
 for quotes
 
 ```conf
@@ -36,4 +42,10 @@ key = ' value '
 
 ```javascript
 cfg = miff.load('/path/to/file.conf', {quotes: true});
+```
+
+parse from string
+
+```javascript
+cfg = miff.parse(path, opts);
 ```

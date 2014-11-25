@@ -58,3 +58,16 @@ describe 'parse', ->
             k: 'v'
             sec:
                 k: 'v2'
+
+    it 'should parse numbers', ->
+        
+        source = """
+            float = 1.2
+            int = 9
+            str = '1.2'
+        """
+
+        parse(source, numbers: yes, quotes: yes).should.deep.equal
+            float: 1.2
+            int: 9
+            str: '1.2'

@@ -3,10 +3,11 @@
   var __slice = [].slice;
 
   exports.parse = function(input, opts, result) {
-    var equalSignSupport, first, idx, key, line, linenumber, quotesSupport, section, sectionSupport, shift, value, _i, _len, _ref;
+    var char, equalSignSupport, first, idx, key, line, linenumber, parseNumber, quotesSupport, section, sectionSupport, shift, unquoted, value, _i, _len, _ref;
     quotesSupport = opts != null ? opts.quotes : void 0;
     sectionSupport = opts != null ? opts.section : void 0;
     equalSignSupport = opts != null ? opts.equal : void 0;
+    parseNumber = opts != null ? opts.numbers : void 0;
     if (result == null) {
       result = {};
     }
@@ -51,12 +52,20 @@
         }
       }
       value = value.trimLeft();
+      unquoted = false;
       if (quotesSupport) {
-        if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+        char = value.charAt(0);
+        if (char === '"' && value.charAt(value.length - 1) === '"') {
           value = value.substr(1, value.length - 2);
+          unquoted = true;
+        } else if (char === "'" && value.charAt(value.length - 1) === "'") {
+          value = value.substr(1, value.length - 2);
+          unquoted = true;
         }
-        if (value.charAt(0) === "'" && value.charAt(value.length - 1) === "'") {
-          value = value.substr(1, value.length - 2);
+      }
+      if (parseNumber && !unquoted) {
+        if (!isNaN(parseFloat(value)) && isFinite(value)) {
+          value = parseFloat(value);
         }
       }
       section[key.trimRight()] = value;
