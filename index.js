@@ -36,7 +36,7 @@
       while (true) {
         idx = line.indexOf('=', shift);
         if (idx === -1) {
-          throw new Error("'=' not found on line " + (linenumber + 1));
+          throw new Error("'=' not found on line " + (linenumber + 1) + " '" + line + "'");
         }
         if (equalSignSupport) {
           if ('\\' !== line.charAt(idx - 1)) {
@@ -96,10 +96,52 @@
     for (_j = 0, _len = files.length; _j < _len; _j++) {
       file = files[_j];
       exports.parse(fs.readFileSync(file, {
-        encoding: 'utf-8'
+        encoding: 'utf8'
       }), opts, ret);
     }
     return ret;
+  };
+
+  exports.stringify = function(dict) {
+    var EOL, escapeEq, escapeQuote, stringify;
+    EOL = require('os').EOL;
+    escapeEq = function(str) {
+      return str.replace(/\=/g, '\\=');
+    };
+    escapeQuote = function(str) {
+      return str.replace(/'/g, "'");
+    };
+    stringify = function(kv) {
+      var k, ret, v;
+      ret = '';
+      for (k in kv) {
+        v = kv[k];
+        if ('object' === typeof v) {
+          ret += "[" + k + "]" + EOL;
+          ret += stringify(v);
+        } else if ('string' === typeof v) {
+          if ('true' === v || 'false' === v) {
+            ret += "" + (escapeEq(k)) + " = '" + v + "'" + EOL;
+          } else if ((' ' === v.charAt(0)) || (' ' === v.charAt(v.length - 1))) {
+            ret += "" + (escapeEq(k)) + " = '" + (escapeQuote(v)) + "'" + EOL;
+          } else {
+            ret += "" + (escapeEq(k)) + " = " + v + EOL;
+          }
+        } else {
+          ret += "" + (escapeEq(k)) + " = " + v + EOL;
+        }
+      }
+      return ret;
+    };
+    return stringify(dict);
+  };
+
+  exports.dump = function(dict, file) {
+    var fs;
+    fs = require('fs');
+    return fs.writeFileSync(file, exports.stringify(dict), {
+      encoding: 'utf8'
+    });
   };
 
 }).call(this);

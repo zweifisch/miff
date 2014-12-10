@@ -22,7 +22,7 @@ exports.parse = (input, opts, result)->
         while true
             idx = line.indexOf '=', shift
             if idx is -1
-                throw new Error "'=' not found on line #{linenumber + 1}"
+                throw new Error "'=' not found on line #{linenumber + 1} '#{line}'"
             if equalSignSupport
                 if '\\' isnt line.charAt idx - 1
                     key = (line.substr 0, idx).split('\\=').join '='
@@ -65,5 +65,35 @@ exports.load = (files..., opts)->
         files.push opts
         opts = null
     for file in files
-        exports.parse fs.readFileSync(file, encoding: 'utf-8'), opts, ret
+        exports.parse fs.readFileSync(file, encoding: 'utf8'), opts, ret
     ret
+
+exports.stringify = (dict)->
+
+    {EOL} = require 'os'
+
+    escapeEq = (str)-> str.replace /\=/g, '\\='
+    escapeQuote = (str)-> str.replace /'/g, "'"
+
+    stringify = (kv)->
+        ret = ''
+        for k,v of kv
+            if 'object' is typeof v
+                ret += "[#{k}]#{EOL}"
+                ret += stringify v
+            else if 'string' is typeof v
+                if 'true' is v or 'false' is v
+                    ret += "#{escapeEq k} = '#{v}'#{EOL}"
+                else if (' ' is v.charAt 0) or (' ' is v.charAt v.length - 1)
+                    ret += "#{escapeEq k} = '#{escapeQuote v}'#{EOL}"
+                else
+                    ret += "#{escapeEq k} = #{v}#{EOL}"
+            else
+                ret += "#{escapeEq k} = #{v}#{EOL}"
+        ret
+
+    stringify dict
+
+exports.dump = (dict, file)->
+    fs = require 'fs'
+    fs.writeFileSync file, exports.stringify(dict), encoding: 'utf8'

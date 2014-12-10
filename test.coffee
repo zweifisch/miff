@@ -1,7 +1,7 @@
 chai = require 'chai'
 chai.should()
 
-{parse} = require './index'
+{parse, stringify} = require './index'
 
 describe 'parse', ->
 
@@ -88,3 +88,65 @@ describe 'parse', ->
             crate: no
             drip: no
             erra: 'true'
+
+describe 'stringify', ->
+
+    {EOL} = require 'os'
+
+    it 'should stringify', ->
+
+        input =
+            str: 'value'
+            num: 1
+            bool: true
+
+        expected = """
+            str = value
+            num = 1
+            bool = true\n"""
+
+        stringify(input).should.equal expected.split('\n').join EOL
+
+    it 'should preserve space', ->
+
+        input =
+            k: 'v'
+            k1: ' v'
+            k2: 'v '
+            k3: ' v '
+
+        expected = """
+            k = v
+            k1 = ' v'
+            k2 = 'v '
+            k3 = ' v '\n"""
+
+        stringify(input).should.equal expected.split('\n').join EOL
+
+    it 'should escape equal', ->
+
+        input =
+            'k=e=y': 'value'
+
+        expected = """
+            k\\=e\\=y = value\n"""
+
+        stringify(input).should.equal expected.split('\n').join EOL
+
+    it 'should generate section header', ->
+
+        input =
+            default: 'val'
+            sec1:
+                k:'val1'
+            sec2:
+                k:'val2'
+
+        expected = """
+            default = val
+            [sec1]
+            k = val1
+            [sec2]
+            k = val2\n"""
+
+        stringify(input).should.equal expected.split('\n').join EOL
