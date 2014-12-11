@@ -56,3 +56,9 @@ parse from string
 ```javascript
 cfg = miff.parse(path, opts);
 ```
+
+generate string
+
+```javascript
+string = miff.stringify(object);
+```
