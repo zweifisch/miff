@@ -20,7 +20,7 @@ describe 'parse', ->
             k e y= "v a l "
         """
 
-        parse(source, quote: yes).should.deep.equal
+        parse(source).should.deep.equal
             key:'value'
             'k e y': 'v a l '
 
@@ -54,7 +54,7 @@ describe 'parse', ->
             k = v2
         """
 
-        parse(source, section: yes).should.deep.equal
+        parse(source).should.deep.equal
             k: 'v'
             sec:
                 k: 'v2'
@@ -67,7 +67,7 @@ describe 'parse', ->
             str = '1.2'
         """
 
-        parse(source, number: yes, quote: yes).should.deep.equal
+        parse(source, number: yes).should.deep.equal
             float: 1.2
             int: 9
             str: '1.2'
@@ -82,7 +82,7 @@ describe 'parse', ->
             erra = 'true'
         """
 
-        parse(source, bool: yes, quote: yes).should.deep.equal
+        parse(source, bool: yes).should.deep.equal
             ace: yes
             boolean: yes
             crate: no
@@ -144,8 +144,10 @@ describe 'stringify', ->
 
         expected = """
             default = val
+
             [sec1]
             k = val1
+
             [sec2]
             k = val2\n"""
 
