@@ -79,7 +79,7 @@ exports.stringify = (dict)->
         ret = ''
         for k,v of kv
             if 'object' is typeof v
-                ret += "[#{k}]#{EOL}"
+                ret += "#{EOL}[#{k}]#{EOL}"
                 ret += stringify v
             else if 'string' is typeof v
                 if 'true' is v or 'false' is v

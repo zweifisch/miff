@@ -117,7 +117,7 @@
       for (k in kv) {
         v = kv[k];
         if ('object' === typeof v) {
-          ret += "[" + k + "]" + EOL;
+          ret += "" + EOL + "[" + k + "]" + EOL;
           ret += stringify(v);
         } else if ('string' === typeof v) {
           if ('true' === v || 'false' === v) {
