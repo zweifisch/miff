@@ -4,8 +4,8 @@
 
   exports.parse = function(input, opts, result) {
     var char, equalSignSupport, first, idx, key, line, linenumber, parseBool, parseNumber, quotesSupport, section, sectionSupport, shift, value, _i, _len, _ref;
-    quotesSupport = opts != null ? opts.quote : void 0;
-    sectionSupport = opts != null ? opts.section : void 0;
+    quotesSupport = (opts != null ? opts.quote : void 0) || true;
+    sectionSupport = (opts != null ? opts.section : void 0) || true;
     equalSignSupport = opts != null ? opts.equal : void 0;
     parseNumber = opts != null ? opts.number : void 0;
     parseBool = opts != null ? opts.bool : void 0;

@@ -1,7 +1,7 @@
 
 exports.parse = (input, opts, result)->
-    quotesSupport = opts?.quote
-    sectionSupport = opts?.section
+    quotesSupport = opts?.quote or on
+    sectionSupport = opts?.section or on
     equalSignSupport = opts?.equal
     parseNumber = opts?.number
     parseBool = opts?.bool
