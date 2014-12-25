@@ -1,6 +1,6 @@
 {
   "name": "miff",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "minimal configuration file parser",
   "main": "index.js",
   "scripts": {
