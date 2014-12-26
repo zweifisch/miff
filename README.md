@@ -1,5 +1,8 @@
 # miff
 
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+
 minimal configuration file parser
 
 ```conf
@@ -41,3 +44,8 @@ generate string
 ```javascript
 string = miff.stringify(object);
 ```
+
+[npm-image]: https://img.shields.io/npm/v/miff.svg?style=flat
+[npm-url]: https://npmjs.org/package/miff
+[travis-image]: https://img.shields.io/travis/zweifisch/miff.svg?style=flat
+[travis-url]: https://travis-ci.org/zweifisch/miff
