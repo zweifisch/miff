@@ -1,61 +1,48 @@
+ensureNamespace = (obj, namespace)->
+    node = obj
+    for name in namespace
+        node[name] = new Object null unless name of node
+        node = node[name]
+    node
+
+parseValue = (input, linenumber)->
+    input = input.trim()
+    firstChar = input.charAt 0
+    if firstChar is '"' and input.charAt(input.length - 1) is '"'
+        return input.substr 1, input.length - 2
+    if firstChar is "'" and input.charAt(input.length - 1) is "'"
+        return input.substr 1, input.length - 2
+    if input is 'on' or input is 'true'
+        return true
+    if input is 'off' or input is 'false'
+        return false
+    if firstChar is '['
+        if input.charAt(input.length - 1) isnt ']'
+            throw Error "array not closed on line #{linenumber + 1}"
+        return input.substr(1, input.length - 2).split(",").map (x)-> parseValue x, linenumber
+    if not isNaN(parseFloat input) and isFinite input
+        return parseFloat input
+    input
 
 exports.parse = (input, opts, result)->
-    quotesSupport = opts?.quote or on
-    sectionSupport = opts?.section or on
-    equalSignSupport = opts?.equal
-    parseNumber = opts?.number
-    parseBool = opts?.bool
-    result ?= {}
+    result ?= new Object null
     section = result
     for line, linenumber in input.split /[\r\n]+/
         line = line.trim()
         continue unless line
         first = line.charAt 0
         continue if first is ';' or first is '#'
-        if sectionSupport and first is '['
-            if line.charAt(line.length - 1) is ']'
-                section = result[line.substr 1, line.length - 2] = {}
-                continue
-            else
-                throw "section header not closed on #{linenumber + 1}"
-        shift = 1
-        while true
-            idx = line.indexOf '=', shift
-            if idx is -1
-                throw new Error "'=' not found on line #{linenumber + 1} '#{line}'"
-            if equalSignSupport
-                if '\\' isnt line.charAt idx - 1
-                    key = (line.substr 0, idx).split('\\=').join '='
-                    value = line.substr idx + 1
-                    break
-                else
-                    shift = idx + 1
-            else
-                key = line.substr 0, idx
-                value = line.substr idx + 1
-                break
-        value = value.trimLeft()
-        key = key.trimRight()
-        if quotesSupport
-            char = value.charAt 0
-            if char is '"' and value.charAt(value.length - 1) is '"'
-                section[key] = value.substr 1, value.length - 2
-                continue
-            else if char is "'" and value.charAt(value.length - 1) is "'"
-                section[key] = value.substr 1, value.length - 2
-                continue
-        if parseBool
-            if value is 'on' or value is 'true'
-                section[key] = true
-                continue
-            else if value is 'off' or value is 'false'
-                section[key] = false
-                continue
-        if parseNumber
-            if not isNaN(parseFloat value) and isFinite value
-                section[key] = parseFloat value
-                continue
-        section[key] = value
+        if first is '['
+            if line.charAt(line.length - 1) isnt ']'
+                throw Error "section header not closed on #{linenumber + 1}"
+            section = ensureNamespace result, (line.substr 1, line.length - 2).split('.')
+            continue
+        idx = line.indexOf '=', 1
+        if idx is -1
+            throw Error "'=' not found on line #{linenumber + 1} '#{line}'"
+        key = line.substr(0, idx).trimRight()
+        value = line.substr idx + 1
+        section[key] = parseValue value, linenumber
     result
 
 exports.load = (files..., opts)->

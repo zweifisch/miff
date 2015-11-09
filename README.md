@@ -30,13 +30,13 @@ off = false
 ```
 
 ```javascript
-cfg = miff.load('/path/to/file.conf', {number: true, bool: true});
+cfg = miff.load('/path/to/file.conf');
 ```
 
 parse from string
 
 ```javascript
-cfg = miff.parse(path, opts);
+cfg = miff.parse(path);
 ```
 
 generate string

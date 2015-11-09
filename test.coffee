@@ -24,15 +24,6 @@ describe 'parse', ->
             key:'value'
             'k e y': 'v a l '
 
-    it 'should escape', ->
-
-        source = """
-            key\\==value=
-        """
-
-        parse(source, equal: yes).should.deep.equal
-            'key=':'value='
-
     it 'should allow unicode', ->
 
         source = """
@@ -89,6 +80,38 @@ describe 'parse', ->
             drip: no
             erra: 'true'
 
+    it 'should parse namespace', ->
+
+        source = """
+            k = v
+            [sec.sub]
+            k = v2
+        """
+
+        parse(source).should.deep.equal
+            k: 'v'
+            sec:
+                sub:
+                    k: 'v2'
+
+    it 'should parse array', ->
+
+        source = """
+            k = [ v, v2, "v 3"]
+        """
+
+        parse(source).should.deep.equal
+            k: ["v", "v2", "v 3"]
+
+    it 'should parse array', ->
+
+        source = """
+            k = [v]
+        """
+
+        parse(source).should.deep.equal
+            k: ["v"]
+    
 describe 'stringify', ->
 
     {EOL} = require 'os'

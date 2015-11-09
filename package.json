@@ -1,10 +1,12 @@
 {
   "name": "miff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "minimal configuration file parser",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee"
+    "test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee",
+    "build": "./node_modules/coffee-script/bin/coffee -c index.coffee",
+    "prepublish": "npm run build"
   },
   "author": "zf",
   "license": "MIT",
