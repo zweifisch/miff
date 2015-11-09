@@ -10,6 +10,14 @@ key = value
 
 [section1]
 key = another value
+number = 1.2
+array = [item, "more item"]
+
+[section2.bools]
+feature = on
+boolean = off
+on = true
+off = false
 ```
 
 usage
@@ -19,24 +27,10 @@ miff = require('miff');
 cfg = miff.load('/path/to/file.conf');
 ```
 
-to parse numbers and bools
-
-```conf
-number = 1.2
-feature = on
-boolean = off
-on = true
-off = false
-```
-
-```javascript
-cfg = miff.load('/path/to/file.conf');
-```
-
 parse from string
 
 ```javascript
-cfg = miff.parse(path);
+cfg = miff.parse(input);
 ```
 
 generate string
