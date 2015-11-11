@@ -1,5 +1,11 @@
 "use strict";
 
+let util = require("./util");
+
+let take = util.take;
+let unshift = util.unshift;
+let skip = util.skip;
+
 const SPACE = 0;
 const STRING = 1;
 const SYMBOL = 2;
@@ -81,6 +87,8 @@ let tokenize = function*(input) {
                 yield {val: char, type: NEWLINE, line: line};
                 line += 1;
                 continue;
+            case "\r":
+                continue;
             }
             token += char;
         }
@@ -104,27 +112,6 @@ let isOP = (val, token)=> token.type === OP && token.val === val;
 
 let isSP = (token)=> token.type === SPACE;
 
-let skip = function*(iterator, fn) {
-    var item;
-    while (!((item = iterator.next()).done) && fn(item.value)) {}
-    yield item.value;
-    yield *iterator;
-};
-
-let unshift = function*(val, iterator) {
-    yield val;
-    yield *iterator;
-};
-
-let take = (iterator, fn) => {
-    let result = [];
-    let item;
-    while (!((item = iterator.next()).done) && fn(item.value)) {
-        result.push(item.value);
-    }
-    return [result, item.done ? iterator : unshift(item.value, iterator)];
-};
-
 let parseNamespace = function(tokens) {
     let ns = [];
     while (true) {
@@ -143,14 +130,25 @@ let parseNamespace = function(tokens) {
 let parseArray = function(tokens) {
     let result = [];
     while(true) {
-        let todo = parseValue(tokens);
-        tokens = todo[1];
-        result.push(todo[0]);
-        tokens = skip(tokens, isSP);
+
+        tokens = skip(tokens, (x)=> isSP(x) || x.type === NEWLINE || isOP(",", x));
+
         let token = tokens.next();
-        if (token.done) throw Error(`array not closed`);
+        if (token.done) throw Error(`array not closed on line ${token.value.line}`);
         if (isOP("]", token.value)) break;
-        if (!isOP(",", token.value)) {
+
+        tokens = unshift(token.value, tokens);
+        let todo = parseValue(tokens);
+        result.push(todo[0]);
+        tokens = todo[1];
+
+        tokens = skip(tokens, isSP);
+
+        token = tokens.next();
+
+        if (isOP("]", token.value)) break;
+
+        if (!(isOP(",", token.value) || token.value.type === NEWLINE)) {
             throw Error(`unexpected token in array "${token.value.val}"`);
         }
     }
@@ -167,10 +165,12 @@ let parseValue = function(tokens) {
     } else if (token.value.type === BOOL) {
         return [token.value.val, tokens];
     }
+    tokens = unshift(token.value, tokens);
+
     let todo = take(tokens, (x)=> x.type !== NEWLINE && !isOP(",", x) && !isOP("]", x));
     let value = todo[0];
     tokens = todo[1];
-    let result = (token.value.val + value.map((x)=> x.val).join("")).trim();
+    let result = value.map((x)=> x.val).join("").trim();
     if (!isNaN(parseFloat(result)) && isFinite(result))
         result = parseFloat(result);
     return [result, tokens];
@@ -222,4 +222,11 @@ exports.load = function (files) {
     for (let file of files)
         exports.parse(fs.readFileSync(file, {encoding: 'utf8'}), ret);
     return ret;
+};
+
+exports.stringify = function() {
+    return ;
+};
+
+exports.dump = function() {
 };

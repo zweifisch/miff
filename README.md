@@ -11,7 +11,7 @@ key = value
 [section1]
 key = another value
 number = 1.2
-array = [item, "more item"]
+array = [item, "more item", [even, more]]
 
 [section2.bools]
 feature = on

@@ -1,18 +1,40 @@
+"use strict";
+
 require("chai").should();
-var tokenize = require("./index").tokenize;
-var parse = require("./index").parse;
-var types = require("./index").types;
-var SPACE = types.SPACE;
-var STRING = types.STRING;
-var SYMBOL = types.SYMBOL;
-var NEWLINE = types.NEWLINE;
-var OP = types.OP;
+
+let tokenize = require("./index").tokenize;
+let parse = require("./index").parse;
+let types = require("./index").types;
+let SPACE = types.SPACE;
+let STRING = types.STRING;
+let SYMBOL = types.SYMBOL;
+let NEWLINE = types.NEWLINE;
+let OP = types.OP;
+
+let util = require("./util");
+
+
+describe('util', ()=> {
+
+    let gen = function*() {
+        yield 1;
+        yield 2;
+        yield 3;
+    };
+
+    it('take', ()=> {
+        let result = util.take(gen(), (x)=> x < 3);
+        result[0].should.deep.equal([1 ,2]);
+        let last = result[1].next();
+        last.value.should.equal(3);
+    });
+});
 
 
 describe('tokenize', ()=> {
 
     it('should respect escaping', ()=> {
-        var source = 'key="v\\"al"';
+        let source = 'key="v\\"al"';
         Array.from(tokenize(source)).should.deep.equal([
             {val: "key", type: SYMBOL, line:1},
             {val: "=", type: OP, line:1},
@@ -21,7 +43,7 @@ describe('tokenize', ()=> {
     });
 
     it('should recognize bool', ()=> {
-        var source = 'key=off';
+        let source = 'key=off';
         Array.from(tokenize(source)).should.deep.equal([
             {val: "key", type: SYMBOL, line:1},
             {val: "=", type: OP, line:1},
@@ -30,7 +52,7 @@ describe('tokenize', ()=> {
     });
 
     it('should tokenize', ()=> {
-        var source = "[section.sub]\n key=val#comment\n#comment\n\n";
+        let source = "[section.sub]\n key=val#comment\n#comment\n\n";
         Array.from(tokenize(source)).should.deep.equal([
             {val: "[", type: OP, line:1},
             {val: "section", type: SYMBOL, line:1},
@@ -55,7 +77,7 @@ describe('tokenize', ()=> {
 
 describe('parse', ()=> {
     it('should parse parse section', ()=> {
-        var source = "[section.sub]\nkey=val";
+        let source = "[section.sub]\nkey=val";
         parse(source).should.deep.equal({
             section: {
                 sub: {
@@ -66,7 +88,7 @@ describe('parse', ()=> {
     });
 
     it('should parse string', ()=> {
-        var source = "\n\n key = 'val' \n\n k = v a l ";
+        let source = "\n\n key = 'val' \n\n k = v a l ";
         parse(source).should.deep.equal({
             key: "val",
             k: "v a l"
@@ -74,7 +96,7 @@ describe('parse', ()=> {
     });
 
     it('should parse numbers and bools', ()=> {
-        var source = "key = -1.2\n key2 = false \n key3   = on";
+        let source = "key = -1.2\n key2 = false \n key3   = on";
         parse(source).should.deep.equal({
             key: -1.2,
             key2: false,
@@ -83,9 +105,34 @@ describe('parse', ()=> {
     });
 
     it('should parse array', ()=> {
-        var source = "key = [1, true, 'str in, g' , string]";
+        let source = "key = [1, true, 'str in, g' , string, [nested, items, ,]]";
         parse(source).should.deep.equal({
-            key: [1, true, "str in, g", "string"]
+            key: [1, true, "str in, g", "string", ["nested", "items"]]
         });
+    });
+
+    it('should parse array', ()=> {
+        let source = "key = [ \n item\nitem2\n item3\n]";
+        parse(source).should.deep.equal({
+            key: ["item", "item2", "item3"]
+        });
+    });
+
+    it('should parse array', ()=> {
+        let source = "key = [ \n item,\nitem2 ,\n item3 ,\n]";
+        parse(source).should.deep.equal({
+            key: ["item", "item2", "item3"]
+        });
+    });
+
+    it('should parse array', ()=> {
+        let source = "key = [ ]";
+        parse(source).should.deep.equal({
+            key: []
+        });
+    });
+
+    it('should reutrn empty object', ()=> {
+        parse('\r\n  \n').should.deep.equal({});
     });
 });
