@@ -4,15 +4,12 @@
   "description": "minimal configuration file parser",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee",
-    "build": "./node_modules/coffee-script/bin/coffee -c index.coffee",
-    "prepublish": "npm run build"
+    "test": "./node_modules/mocha/bin/mocha test.js --bail"
   },
   "author": "zf",
   "license": "MIT",
   "devDependencies": {
     "chai": "^1.10.0",
-    "coffee-script": "^1.8.0",
     "mocha": "^2.1.0"
   },
   "keywords": [
