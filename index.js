@@ -216,17 +216,57 @@ exports.types = {
     COMMENT:COMMENT
 };
 
-exports.load = function (files) {
+exports.load = function (file) {
     let fs = require('fs');
     let ret = new Object(null);
-    for (let file of files)
+    for (let file of arguments)
         exports.parse(fs.readFileSync(file, {encoding: 'utf8'}), ret);
     return ret;
 };
 
-exports.stringify = function() {
-    return ;
+let escapeQuote = (str)=> str.replace(/"/g, '\\"');
+
+let stringifyValue = function(value) {
+    switch (typeof value) {
+    case "string":
+        if (!value) return '""';
+        return /[\t "']/.test(value) ? `"${escapeQuote(value)}"` : value;
+    case "number":
+        return `${value}`;
+    case "boolean":
+        return value ? "on" : "off";
+    case "object":
+        if (Array.isArray(value)) {
+            return `[${value.map(stringifyValue).join(", ")}]`;
+        }
+    }
+    return value;
 };
 
-exports.dump = function() {
+let stringify = function(input, prefix) {
+    let output = "";
+    if (prefix) {
+        let wrap = (-1 === prefix.indexOf(".")) ? "\n" : "";
+        output += `${wrap}[${prefix}]\n${wrap}`;
+    }
+    for (let key in input) {
+        if ('object' !== typeof input[key]) {
+            output += `${key} = ${stringifyValue(input[key])}\n`;
+        } else if (Array.isArray(input[key])) {
+            output += `${key} = ${stringifyValue(input[key])}\n`;
+        }
+    }
+    for (let key in input) {
+        if ('object' === typeof input[key] && !Array.isArray(input[key])) {
+            output += stringify(input[key], prefix ? `${prefix}.${key}` : key);
+        }
+    }
+    return output;
+};
+
+exports.stringify = stringify;
+
+exports.dump = function(dict, file) {
+    let fs = require('fs');
+    fs.writeFileSync(file, stringify(dict), {encoding: 'utf8'});
 };
