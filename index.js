@@ -94,8 +94,12 @@ let tokenize = function*(input) {
             token += char;
         }
     }
-    if (quoting) throw Error(`unmatched ${quoting}`);
-    yield *collect();
+    if (quoting) throw Error(`Unmatched ${quoting}`);
+    if (commenting) {
+        yield *collect(COMMENT);
+    } else {
+        yield *collect();
+    }
 };
 
 let ensureNamespace = (obj, namespace)=> {

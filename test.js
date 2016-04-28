@@ -135,4 +135,8 @@ describe('parse', ()=> {
     it('should reutrn empty object', ()=> {
         parse('\r\n  \n').should.deep.equal({});
     });
+
+    it('should allow comments at end of input', ()=> {
+        parse('# comment').should.deep.equal({});
+    });
 });

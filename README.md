@@ -3,7 +3,7 @@
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 
-minimal configuration file parser
+minimal configuration file format
 
 ```conf
 key = value
