@@ -37,7 +37,7 @@ let tokenize = function*(input) {
             token = "";
         };
     };
-    
+
     for (let char of input) {
         if (commenting) {
             if (char === "\n") {
@@ -63,6 +63,7 @@ let tokenize = function*(input) {
         } else {
             switch (char) {
             case ' ':
+            case "\t":
                 yield *collect();
                 yield {val:char, type: SPACE, line: line};
                 continue;
