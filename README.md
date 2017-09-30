@@ -23,20 +23,19 @@ off = false
 usage
 
 ```javascript
-miff = require('miff');
-cfg = miff.load('/path/to/file.conf');
+const miff = require('miff')
 ```
 
 parse from string
 
 ```javascript
-cfg = miff.parse(input);
+const cfg = miff.parse(input)
 ```
 
 generate string
 
 ```javascript
-string = miff.stringify(object);
+const string = miff.stringify(object)
 ```
 
 [npm-image]: https://img.shields.io/npm/v/miff.svg?style=flat
