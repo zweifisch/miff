@@ -26,13 +26,13 @@ usage
 const miff = require('miff')
 ```
 
-parse from string
+parsing from string
 
 ```javascript
 const cfg = miff.parse(input)
 ```
 
-generate string
+generating string from object
 
 ```javascript
 const string = miff.stringify(object)
