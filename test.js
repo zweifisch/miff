@@ -145,28 +145,33 @@ key = value
 
     it('should serialize with section', ()=> {
         stringify({
-            key: 'value',
+            key: 1,
             section: {
-                key: 'value',
-                key2: "value 2"
+                key: 2,
+                subsection: {
+                    key: 3
+                }
             }
         }).should.equal(`\
-key = value
+key = 1
 
 [section]
 
-key = value
-key2 = "value 2"
+key = 2
+[section.subsection]
+key = 3
 `)
     })
 
     it('should escape strings', ()=> {
         stringify({
             case1: '"',
-            case2: "'"
+            case2: "'",
+            case3: "sp ace"
         }).should.equal(`\
 case1 = "\\""
 case2 = "'"
+case3 = "sp ace"
 `)
     })
 
