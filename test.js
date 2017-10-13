@@ -1,7 +1,8 @@
-require("chai").should()
+require('chai').should()
 
-const {tokenize, parse, types} = require("./lib/parser")
-const {take} = require("./lib/util")
+const {tokenize, types} = require('./lib/parser')
+const {stringify, parse} = require('./index')
+const {take} = require('./lib/util')
 
 const {SPACE, STRING, SYMBOL, NEWLINE, OP} = types
 
@@ -130,5 +131,62 @@ describe('parse', ()=> {
 
     it('should allow comments at end of input', ()=> {
         parse('# comment').should.deep.equal({})
+    })
+})
+
+describe('stringify', ()=> {
+    it('should serialize without section', ()=> {
+        stringify({
+            key: 'value'
+        }).should.equal(`\
+key = value
+`)
+    })
+
+    it('should serialize with section', ()=> {
+        stringify({
+            key: 'value',
+            section: {
+                key: 'value',
+                key2: "value 2"
+            }
+        }).should.equal(`\
+key = value
+
+[section]
+
+key = value
+key2 = "value 2"
+`)
+    })
+
+    it('should escape strings', ()=> {
+        stringify({
+            case1: '"',
+            case2: "'"
+        }).should.equal(`\
+case1 = "\\""
+case2 = "'"
+`)
+    })
+
+    it('should serialize bools and numbers', ()=> {
+        stringify({
+            yes: true,
+            no: false,
+            ten: 10
+        }).should.equal(`\
+yes = on
+no = off
+ten = 10
+`)
+    })
+
+    it('should serialize arrays', ()=> {
+        stringify({
+            list: [1, 2, [3, 4]]
+        }).should.equal(`\
+list = [1, 2, [3, 4]]
+`)
     })
 })
